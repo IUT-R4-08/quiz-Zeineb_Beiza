@@ -6,5 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    //
+    protected $fillable = ['category_id', 'question'];
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
