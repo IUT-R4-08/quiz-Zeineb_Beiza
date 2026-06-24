@@ -13,9 +13,26 @@ class QuizApiTest extends TestCase
     /** @test */
     public function test_categories_api_returns_data()
     {
+        // creation de categories pour le test
+        Category::create(['name' => 'Sport']);
+        Category::create(['name' => 'Culture']);
+
+        // appel de l'API pour récupérer les catégories
         $response = $this->getJson('/api/categories');
 
-        $response->assertStatus(200);
+        // vérification de la réponse
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                '*' => [
+                    'id',
+                    'name',
+                    'created_at',
+                    'updated_at',
+                ]
+            ])
+            ->assertJsonFragment([
+                'name' => 'Sport'
+            ]);
     }
 
 
