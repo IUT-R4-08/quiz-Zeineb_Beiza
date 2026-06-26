@@ -1,36 +1,63 @@
 <template>
-    <div style="max-width: 600px; margin: 40px auto; font-family: sans-serif;">
-        <h2>Scoreboard</h2>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <thead>
-                <tr>
-                    <th style="text-align: left; padding: 8px; border-bottom: 2px solid #ccc;">Pseudo</th>
-                    <th style="text-align: left; padding: 8px; border-bottom: 2px solid #ccc;">Score</th>
-                    <th style="text-align: left; padding: 8px; border-bottom: 2px solid #ccc;">Catégorie</th>
-                    <th style="text-align: left; padding: 8px; border-bottom: 2px solid #ccc;">Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="score in scores" :key="score.id">
-                    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ score.pseudo }}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ score.score }}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ score.category?.name }}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ new Date(score.created_at).toLocaleDateString() }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="container">
+    <h1>🏆 Scoreboard</h1>
+
+    <table v-if="scores.length">
+      <thead>
+        <tr>
+          <th>Pseudo</th>
+          <th>Score</th>
+          <th>Catégorie</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr v-for="score in scores" :key="score.id">
+          <td>{{ score.pseudo }}</td>
+          <td>{{ score.score }}</td>
+          <td>{{ score.category?.name ?? '—' }}</td>
+          <td>{{ formatDate(score.created_at) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p v-else>Aucun score disponible.</p>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue'
 
-const scores = ref([]);
+const scores = ref([])
 
 async function loadScores() {
-    const res = await fetch('/api/scores');
-    scores.value = await res.json();
+  const res = await fetch('/api/scores')
+  scores.value = await res.json()
 }
 
-loadScores();
+function formatDate(date) {
+  return new Date(date).toLocaleDateString('fr-FR')
+}
+
+onMounted(loadScores)
 </script>
+
+<style scoped>
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  font-family: Arial;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+</style>
